@@ -1,6 +1,4 @@
-# redis client
-
-![Version](https://img.shields.io/badge/version-1.1.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 
 ## 安装
 ```
@@ -70,7 +68,7 @@ const redis = new IoredisAdapter({
     db: 1
 });
 
-const cache = new RedisConfigCache('framework-dev-gateway:Config:data-source', redis, 'ball-mage-prop:Enum');
+const cache = new RedisConfigCache(redis, 'redis-data-key', 'redis-time-field');
 await cache.get<T>('LoadBalance');
 await cache.flush();
 ```

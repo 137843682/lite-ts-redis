@@ -3,7 +3,7 @@ import Ioredis from 'ioredis';
 import { SetTimeoutThread } from 'lite-ts-thread';
 
 import { IoredisAdapter as Self } from './ioredis-adapter';
-import { IRedisGeo, IRedisZMember } from './i-redis';
+import { IRedisGeo, IRedisZMember } from './redis-base';
 
 const cfg = {
     host: '127.0.0.1',
@@ -13,7 +13,7 @@ const cfg = {
 let client: Ioredis.Redis, self: Self, sub: Ioredis.Redis;
 const thread = new SetTimeoutThread();
 
-describe('src/service/ioredis/index.ts', () => {
+describe('src/ioredis-adapter.ts', () => {
     after(() => {
         client.disconnect();
         self.close();

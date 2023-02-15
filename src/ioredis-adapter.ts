@@ -1,27 +1,21 @@
 import Ioredis from 'ioredis';
 
-import { IRedisGeo, IRedisZMember, IRedisZRangeByLexOption, IRedisZRangeByScoreOption, IRedis } from './i-redis';
+import { IRedisGeo, IRedisZMember, IRedisZRangeByLexOption, IRedisZRangeByScoreOption, RedisBase } from './redis-base';
 
 type RedisType = Ioredis.Cluster | Ioredis.Redis;
 
-export class IoredisAdapter implements IRedis {
+export class IoredisAdapter extends RedisBase {
     private m_Client: RedisType;
-    /**
-     * 客户端
-     */
-    protected get client(): RedisType {
+    protected get client() {
         this.m_Client ??= this.m_Opt instanceof Array ? new Ioredis.Cluster(this.m_Opt) : new Ioredis(this.m_Opt);
         return this.m_Client;
     }
 
-    /**
-     * 构造函数
-     * 
-     * @param m_Opt 选项
-     */
     public constructor(
         private m_Opt: Ioredis.RedisOptions | Ioredis.ClusterNode[]
-    ) { }
+    ) {
+        super();
+    }
 
     public async blpop(timeout: number, ...keys: string[]) {
         if (timeout < 0)

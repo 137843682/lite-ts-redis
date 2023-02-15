@@ -1,8 +1,8 @@
-import { ok, strictEqual } from 'assert';
+import { notStrictEqual, ok, strictEqual } from 'assert';
 import { Mock } from 'lite-ts-mock';
 import { ThreadBase } from 'lite-ts-thread';
 
-import { RedisMutex as Self } from './mutex';
+import { CustomError, RedisMutex as Self } from './mutex';
 import { IoredisAdapter } from './ioredis-adapter';
 
 const cfg = {
@@ -12,12 +12,12 @@ const cfg = {
 };
 const redis = new IoredisAdapter(cfg);
 
-describe('src/service/redis/lock.ts', () => {
+describe('src/mutex.ts', () => {
     after(() => {
         redis.close();
     });
 
-    describe('.lock(opt: RedisMutexOption)', () => {
+    describe('.lock(opt: IRedisMutexOption)', () => {
         it('once', async () => {
             const self = new Self(redis, null);
             let unlock = await self.lock({
@@ -73,7 +73,7 @@ describe('src/service/redis/lock.ts', () => {
 
             mockThread.expected.sleepRange(100, 300);
 
-            let err: Error;
+            let err: CustomError;
             try {
                 await self.lock({
                     key: 'test-wait-lock-err',
@@ -82,7 +82,8 @@ describe('src/service/redis/lock.ts', () => {
             } catch (ex) {
                 err = ex;
             }
-            strictEqual(err, Self.errWaitLock);
+            notStrictEqual(err, undefined);
+            strictEqual(err.code, Self.waitLockErrorCode);
         });
     });
 });

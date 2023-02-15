@@ -1,3 +1,7 @@
+export interface IMutexOption {
+    key: string;
+}
+
 export interface IMutex {
-    lock(opt?: any): Promise<() => Promise<void>>;
+    lock(opt: IMutexOption): Promise<() => Promise<void>>;
 }

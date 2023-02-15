@@ -1,18 +1,18 @@
-import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
+import { notStrictEqual, strictEqual } from 'assert';
 import { Mock } from 'lite-ts-mock';
 
 import { RedisConfigCache as Self } from './config-cache';
-import { IRedis } from './i-redis';
+import { RedisBase } from './redis-base';
 
-describe('src/service/redis/config-cache.ts', () => {
+describe('src/config-cache.ts', () => {
     describe('.flush()', () => {
         it('ok', async () => {
-            const mockRedis = new Mock<IRedis>();
-            const self = new Self('redis-key', mockRedis.actual, 'test');
+            const mockRedis = new Mock<RedisBase>();
+            const self = new Self(mockRedis.actual, 'data-key', 'time-field');
 
             mockRedis.expected.hset(
-                'cache',
-                'test',
+                Self.timeRedisKey,
+                'time-field',
                 Date.now().toString()
             );
 
@@ -22,21 +22,21 @@ describe('src/service/redis/config-cache.ts', () => {
 
     describe('.get<T>(key: string)', () => {
         it('ok', async () => {
-            const mockRedis = new Mock<IRedis>();
-            const self = new Self('redis-key', mockRedis.actual, 'test');
+            const mockRedis = new Mock<RedisBase>();
+            const self = new Self(mockRedis.actual, 'data-key', 'time-field');
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'test'),
+                r => r.hget(Self.timeRedisKey, 'time-field'),
                 ''
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'test'),
+                r => r.hget(Self.timeRedisKey, 'time-field'),
                 ''
             );
 
             mockRedis.expectReturn(
-                r => r.hgetall('redis-key'),
+                r => r.hgetall('data-key'),
                 {
                     a: '1'
                 }
@@ -48,40 +48,6 @@ describe('src/service/redis/config-cache.ts', () => {
 
             const nextCheckOn = Reflect.get(self, 'nextCheckOn');
             notStrictEqual(nextCheckOn, 0);
-        });
-    });
-
-    describe('.load()', () => {
-        it('ok', async () => {
-            const mockRedis = new Mock<IRedis>();
-            const self = new Self('redis-key', mockRedis.actual, 'cache-key');
-
-            mockRedis.expectReturn(
-                r => r.hgetall('redis-key'),
-                {
-                    a: JSON.stringify({
-                        a1: 1,
-                        a2: 2
-                    }),
-                    b: JSON.stringify({
-                        b1: 'b',
-                        b2: 'bb'
-                    })
-                }
-            );
-
-            const fn = Reflect.get(self, 'load').bind(self) as () => Promise<{ [key: string]: any; }>;
-            const res = await fn();
-            deepStrictEqual(res, {
-                a: {
-                    a1: 1,
-                    a2: 2
-                },
-                b: {
-                    b1: 'b',
-                    b2: 'bb'
-                }
-            });
         });
     });
 });

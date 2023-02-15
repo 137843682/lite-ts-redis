@@ -1,25 +1,27 @@
 import { ICache } from './i-cache';
-import { IRedis } from './i-redis';
 import { ITraceable } from './i-traceable';
-import { TracerStrategy } from './tracer-strategy';
+import { RedisBase } from './redis-base';
+import { TracerWrapper } from './tracer-wrapper';
 
 export class RedisConfigCache implements ICache, ITraceable<ICache> {
+    public static timeRedisKey = 'cache';
+
     protected nextCheckOn = 0;
-    protected value: { [key: string]: any; };
+    protected value: Promise<{ [key: string]: any; }>;
 
     public updateOn = 0;
 
     public constructor(
-        protected redisKey: string,
-        private redis: IRedis,
-        private cacheKey: string,
+        protected redis: RedisBase,
+        protected dataKey: string,
+        protected timeField: string,
     ) { }
 
     public async flush() {
         this.nextCheckOn = 0;
         await this.redis.hset(
-            'cache',
-            this.cacheKey,
+            RedisConfigCache.timeRedisKey,
+            this.timeField,
             Date.now().toString()
         );
     }
@@ -27,11 +29,23 @@ export class RedisConfigCache implements ICache, ITraceable<ICache> {
     public async get<T>(key: string) {
         const now = Date.now();
         if (this.nextCheckOn < now) {
-            const value = await this.redis.hget('cache', this.cacheKey);
-            const lastCacheOn = parseInt(value) || now;
+            const timeValue = await this.redis.hget(RedisConfigCache.timeRedisKey, this.timeField);
+            const lastCacheOn = parseInt(timeValue) || now;
             if (this.updateOn != lastCacheOn) {
                 this.updateOn = lastCacheOn;
-                this.value = await this.load();
+                this.value = new Promise<{ [key: string]: any; }>(async (s, f) => {
+                    try {
+                        const v = await this.redis.hgetall(this.dataKey);
+                        s(
+                            Object.entries(v).reduce((memo, [ck, cv]) => {
+                                memo[ck] = JSON.parse(cv);
+                                return memo;
+                            }, {}),
+                        );
+                    } catch (ex) {
+                        f(ex);
+                    }
+                });
             }
 
             this.nextCheckOn = now + 5_000 + Math.floor(
@@ -39,7 +53,8 @@ export class RedisConfigCache implements ICache, ITraceable<ICache> {
             );
         }
 
-        return this.value[key] as T;
+        const value = await this.value;
+        return value[key] as T;
     }
 
     public withTrace(parentSpan: any) {
@@ -47,21 +62,13 @@ export class RedisConfigCache implements ICache, ITraceable<ICache> {
             return this;
 
         const self = new RedisConfigCache(
-            this.redisKey,
-            new TracerStrategy(this.redis).withTrace(parentSpan),
-            this.cacheKey,
+            new TracerWrapper(this.redis).withTrace(parentSpan),
+            this.dataKey,
+            this.timeField,
         );
         self.nextCheckOn = this.nextCheckOn;
         self.updateOn = this.updateOn;
         self.value = this.value;
         return self;
-    }
-
-    protected async load() {
-        const v = await this.redis.hgetall(this.redisKey);
-        return Object.entries(v).reduce((memo, [ck, cv]) => {
-            memo[ck] = JSON.parse(cv);
-            return memo;
-        }, {});
     }
 }

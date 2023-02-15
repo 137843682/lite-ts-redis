@@ -1,20 +1,31 @@
 import { ThreadBase } from 'lite-ts-thread';
 
-import { IMutex } from './i-mutex';
-import { IRedis } from './i-redis';
 import { ITraceable } from './i-traceable';
-import { RedisMutexOption } from './mutex-option';
-import { TracerStrategy } from './tracer-strategy';
+import { IMutex, IMutexOption } from './i-mutex';
+import { RedisBase } from './redis-base';
+import { TracerWrapper } from './tracer-wrapper';
+
+export interface IRedisMutexOption extends IMutexOption {
+    timeoutSeconds?: number;
+    tryCount?: number;
+    sleepRange?: [number, number];
+}
+
+export class CustomError extends Error {
+    public constructor(public code: number) {
+        super('');
+    }
+}
 
 export class RedisMutex implements IMutex, ITraceable<IMutex> {
-    public static errWaitLock: Error;
+    public static waitLockErrorCode = 507;
 
     public constructor(
-        private m_Redis: IRedis,
+        private m_Redis: RedisBase,
         private m_Thread: ThreadBase,
     ) { }
 
-    public async lock(opt: RedisMutexOption) {
+    public async lock(opt: IRedisMutexOption) {
         if (opt.timeoutSeconds) {
             const ok = await this.m_Redis.set(opt.key, 'ok', 'ex', opt.timeoutSeconds, 'nx');
             return ok ? async () => {
@@ -38,14 +49,14 @@ export class RedisMutex implements IMutex, ITraceable<IMutex> {
         }
 
         if (!unlock)
-            throw RedisMutex.errWaitLock;
+            throw new CustomError(RedisMutex.waitLockErrorCode);
 
         return unlock;
     }
 
     public withTrace(parentSpan: any) {
         return parentSpan ? new RedisMutex(
-            new TracerStrategy(this.m_Redis).withTrace(parentSpan),
+            new TracerWrapper(this.m_Redis).withTrace(parentSpan),
             this.m_Thread,
         ) : this;
     }

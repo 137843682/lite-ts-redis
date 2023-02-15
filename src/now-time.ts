@@ -1,16 +1,16 @@
 import moment from 'moment';
 
 import { INowTime } from './i-now-time';
-import { IRedis } from './i-redis';
+import { RedisBase } from './redis-base';
 
 export class RedisNowTime implements INowTime {
-    public constructor(private m_Redis: IRedis) { }
+    public constructor(private m_Redis: RedisBase) { }
 
-    public async isSameDayUnix(unixTime: number) {
+    public async isSame(unixTime: number, granularity: string) {
         const nowUnix = await this.unix();
         return moment.unix(nowUnix).isSame(
             moment.unix(unixTime),
-            'day'
+            granularity as any,
         );
     }
 

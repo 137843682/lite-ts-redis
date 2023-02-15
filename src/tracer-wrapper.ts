@@ -1,6 +1,6 @@
 import { ITraceable } from './i-traceable';
 
-export class TracerStrategy<T> implements ITraceable<T> {
+export class TracerWrapper<T> implements ITraceable<T> {
     public constructor(
         private m_Origin: T
     ) { }

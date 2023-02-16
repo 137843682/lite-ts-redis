@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "ioredis": "^4.28.5",
+    "lite-ts-enum": "^1.1.0",
     "lite-ts-thread": "^1.0.0",
     "moment": "^2.29.4"
   },
@@ -37,5 +38,5 @@
     "release": "npm run build && npm publish && npm config delete https-proxy && npm config set registry=https://registry.npm.taobao.org",
     "test": "mocha -t 30s -r ./node_modules/ts-node/register/index.js --exit"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

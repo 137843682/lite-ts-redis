@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "ioredis": "^4.28.5",
-    "lite-ts-enum": "^1.1.0",
+    "lite-ts-enum": "^1.2.0",
     "lite-ts-thread": "^1.0.0",
     "moment": "^2.29.4"
   },

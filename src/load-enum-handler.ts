@@ -47,6 +47,11 @@ export class LoadRedisEnumHandler extends LoadEnumHandlerBase {
             await this.m_Redis.hmset('cache', args);
         }
 
+        this.m_Cache[opt.enum.name] ??= {
+            nextCheckOn: 0,
+            updateOn: 0,
+            data: {}
+        }
         if (this.m_Cache[opt.enum.name].nextCheckOn >= now) {
             opt.res = this.m_Cache[opt.enum.name].data;
             return;

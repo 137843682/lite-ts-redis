@@ -132,5 +132,48 @@ describe('src/load-enum-handler.ts', () => {
                 }
             });
         });
+
+        it('加载新增枚举数据', async () => {
+            const mockRedis = new Mock<RedisBase>();
+            const self = new Self(mockRedis.actual, 'f', null);
+            Reflect.set(
+                self,
+                'm_Cache',
+                {
+                    't': {
+                        nextCheckOn: Date.now() - 100,
+                        updateOn: 0,
+                        data: {}
+                    }
+                }
+            );
+
+            mockRedis.expectReturn(
+                r => r.hget('cache', 'f:a'),
+                null
+            );
+
+            const mockHandler = new Mock<LoadEnumHandlerBase>();
+            self.setNext(mockHandler.actual);
+
+            const opt = {
+                enum: {
+                    name: 'a'
+                } as any,
+                res: {
+                    0: {
+                        value: 0
+                    }
+                }
+            };
+            mockHandler.expected.handle(opt);
+
+            await self.handle(opt);
+            deepStrictEqual(opt.res, {
+                0: {
+                    value: 0
+                }
+            });
+        });
     });
 });

@@ -1,24 +1,30 @@
 import { deepStrictEqual } from 'assert';
-import { Enum, LoadEnumHandleOption, LoadEnumHandlerBase } from 'lite-ts-enum';
+import { LoadEnumHandlerBase } from 'lite-ts-enum';
 import { Mock } from 'lite-ts-mock';
 
 import { LoadRedisEnumHandler as Self } from './load-enum-handler';
 import { RedisBase } from './redis-base';
 
 describe('src/load-enum-handler.ts', () => {
-    describe('.handle(enumerator: Enum<any>, res: { [value: number]: any; })', () => {
+    describe('.handle(opt: LoadEnumHandlerBase)', () => {
         it('检测失败', async () => {
-            const self = new Self(null, null);
+            const self = new Self(null, null, null);
 
             Reflect.set(
                 self,
-                'm_NextCheckOn',
-                Date.now() * 2
+                'm_Cache',
+                {
+                    't': {
+                        nextCheckOn: Date.now() * 2
+                    }
+                }
             );
 
             const res = {};
             await self.handle({
-                enum: null,
+                enum: {
+                    name: 't'
+                } as any,
                 res
             });
             deepStrictEqual(res, {});
@@ -26,50 +32,57 @@ describe('src/load-enum-handler.ts', () => {
 
         it('加载数据', async () => {
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f');
-
+            const self = new Self(mockRedis.actual, 'f', null);
             Reflect.set(
                 self,
-                'm_NextCheckOn',
-                Date.now() - 100
+                'm_Cache',
+                {
+                    't': {
+                        nextCheckOn: Date.now() - 100,
+                        updateOn: 0,
+                        data: {}
+                    }
+                }
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'f'),
+                r => r.hget('cache', 'f:t'),
                 '1'
             );
 
             const mockHandler = new Mock<LoadEnumHandlerBase>();
             self.setNext(mockHandler.actual);
 
-            const res = {};
-            mockHandler.expected.handle({
+            const opt = {
                 enum: {
                     name: 't'
                 } as any,
-                res
-            });
+                res: {}
+            };
+            mockHandler.expected.handle(opt);
 
-            await self.handle({
-                enum: {
-                    name: 't'
-                } as any,
-                res
-            });
+            await self.handle(opt);
+            deepStrictEqual(opt.res, {});
         });
 
         it('无需加载数据', async () => {
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f');
+            const self = new Self(mockRedis.actual, 'f', null);
 
             Reflect.set(
                 self,
-                'm_NextCheckOn',
-                Date.now() - 100
+                'm_Cache',
+                {
+                    't': {
+                        nextCheckOn: Date.now() - 100,
+                        updateOn: 0,
+                        data: {}
+                    }
+                }
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'f'),
+                r => r.hget('cache', 'f:t'),
                 '0'
             );
 
@@ -81,101 +94,41 @@ describe('src/load-enum-handler.ts', () => {
             });
         });
 
-        it('加载数据并读取缓存', async () => {
+        it('缓存为空加载所有数据', async () => {
+            const mockAllEnumHandler = new Mock<LoadEnumHandlerBase>();
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'ball-mage-prop-ValueTypeData');
+            const self = new Self(mockRedis.actual, 'f', mockAllEnumHandler.actual);
 
-            Reflect.set(
-                self,
-                'm_NextCheckOn',
-                Date.now() - 100
-            )
-
-            mockRedis.expectReturn(
-                r => r.hget('cache', 'ball-mage-prop-ValueTypeData'),
-                '1'
-            );
-
-            const mockEnum = new Mock<Enum<any>>({
-                name: 'ValueTypeData'
-            });
-            const opt = {
-                enum: mockEnum.actual,
-                res: {}
-            };
-            const mockHandler = new Mock<LoadEnumHandlerBase>({
-                handle(opt: LoadEnumHandleOption) {
-                    opt.res = {
-                        0: {
-                            value: 0
-                        }
-                    };
-                }
-            });
-            self.setNext(mockHandler.actual);
-
-            await self.handle(opt);
-            deepStrictEqual(opt.res, {
-                0: {
-                    value: 0
-                }
-            });
-
-            await self.handle({
-                enum: mockEnum.actual,
-                res: {}
-            });
-            deepStrictEqual(opt.res, {
-                0: {
-                    value: 0
-                }
-            });
-        });
-
-        it('更新时间相同时读取缓存', async () => {
-            const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'ball-mage-prop-ValueTypeData');
-
-            Reflect.set(
-                self,
-                'm_NextCheckOn',
-                Date.now() - 100
-            )
-
-            Reflect.set(
-                self,
-                'm_UpdateOn',
-                1
-            )
-
-            Reflect.set(
-                self,
-                'm_Value',
-                {
-                    ValueTypeData: {
-                        0: {
-                            value: 0
+            mockAllEnumHandler.expectReturn(
+                r => r.handle(null),
+                Reflect.set(
+                    self,
+                    'm_Cache',
+                    {
+                        't': {
+                            nextCheckOn: Date.now() * 2,
+                            data: {
+                                2: {
+                                    value: 2
+                                }
+                            }
                         }
                     }
-                }
-            )
-
-            mockRedis.expectReturn(
-                r => r.hget('cache', 'ball-mage-prop-ValueTypeData'),
-                '1'
+                )
             );
 
-            const mockEnum = new Mock<Enum<any>>({
-                name: 'ValueTypeData'
-            });
             const opt = {
-                enum: mockEnum.actual,
+                enum: {
+                    name: 't'
+                } as any,
                 res: {}
             };
+
             await self.handle(opt);
+
             deepStrictEqual(opt.res, {
-                0: {
-                    value: 0
+                2: {
+                    value: 2
                 }
             });
         });

@@ -114,6 +114,13 @@ export abstract class RedisBase {
     public abstract hgetall(key: string): Promise<{ [key: string]: string }>;
 
     /**
+     * 获取hash所有键
+     * 
+     * @param key 键
+     */
+    public abstract hkeys(key: string): Promise<string[]>;
+
+    /**
      * hash长度
      * 
      * @param key 键
@@ -127,13 +134,6 @@ export abstract class RedisBase {
      * @param args { 字段 : 值 }
      */
     public abstract hmset(key: string, args: { [key: string]: string }): Promise<void>;
-
-    /**
-     * 获取hash所有键
-     * 
-     * @param key 键
-     */
-    public abstract hkeys(key: string): Promise<string[]>;
 
     /**
      * 设置hash字段的值

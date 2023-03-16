@@ -32,7 +32,7 @@ describe('src/load-enum-handler.ts', () => {
 
         it('加载数据', async () => {
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f', null);
+            const self = new Self(null, mockRedis.actual, 'f');
             Reflect.set(
                 self,
                 'm_Cache',
@@ -67,7 +67,7 @@ describe('src/load-enum-handler.ts', () => {
 
         it('无需加载数据', async () => {
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f', null);
+            const self = new Self(null, mockRedis.actual, 'f');
 
             Reflect.set(
                 self,
@@ -97,7 +97,7 @@ describe('src/load-enum-handler.ts', () => {
         it('缓存为空加载所有数据', async () => {
             const mockAllEnumHandler = new Mock<LoadEnumHandlerBase>();
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f', mockAllEnumHandler.actual);
+            const self = new Self(mockAllEnumHandler.actual, mockRedis.actual, 'f');
 
             mockAllEnumHandler.expectReturn(
                 r => r.handle(null),
@@ -135,7 +135,7 @@ describe('src/load-enum-handler.ts', () => {
 
         it('加载新增枚举数据', async () => {
             const mockRedis = new Mock<RedisBase>();
-            const self = new Self(mockRedis.actual, 'f', null);
+            const self = new Self(null, mockRedis.actual, 'f');
             Reflect.set(
                 self,
                 'm_Cache',

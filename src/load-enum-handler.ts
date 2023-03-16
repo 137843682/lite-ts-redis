@@ -12,9 +12,9 @@ export class LoadRedisEnumHandler extends LoadEnumHandlerBase {
     };
 
     public constructor(
+        private m_LoadAllEnumHandler: LoadEnumHandlerBase,
         private m_Redis: RedisBase,
-        private m_TimeField: string,
-        private m_LoadAllEnumHandler: LoadEnumHandlerBase
+        private m_TimeField: string
     ) {
         super();
     }

@@ -1,9 +1,8 @@
 import { LoadEnumHandleOption, LoadEnumHandlerBase } from 'lite-ts-enum';
 
-import { LoadRedisEnumHandlerBase } from './load-redis-enum-handler-base';
 import { RedisBase } from './redis-base';
 
-export class LoadRedisEnumHandler extends LoadRedisEnumHandlerBase {
+export class LoadRedisEnumHandler extends LoadEnumHandlerBase {
     private m_Cache: {
         [key: string]: {
             nextCheckOn: number;
@@ -35,7 +34,19 @@ export class LoadRedisEnumHandler extends LoadRedisEnumHandlerBase {
         if (!this.m_Cache) {
             const allEnumOpt = { res: {} } as any;
             await this.m_LoadAllEnumHandler.handle(allEnumOpt);
-            this.m_Cache = allEnumOpt.res;
+            this.m_Cache ??= {};
+            for (const [k, v] of Object.entries(allEnumOpt.res)) {
+                this.m_Cache[k] = {
+                    nextCheckOn: now,
+                    updateOn: now,
+                    data: v
+                }
+                await this.m_Redis.hset(
+                    'cache',
+                    `${this.m_TimeField}:${k}`,
+                    now.toString()
+                );
+            }
         }
 
         if (this.m_Cache[opt.enum.name].nextCheckOn >= now) {

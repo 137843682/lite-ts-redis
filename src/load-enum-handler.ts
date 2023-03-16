@@ -35,18 +35,16 @@ export class LoadRedisEnumHandler extends LoadEnumHandlerBase {
             const allEnumOpt = { res: {} } as any;
             await this.m_LoadAllEnumHandler.handle(allEnumOpt);
             this.m_Cache ??= {};
+            const args = {};
             for (const [k, v] of Object.entries(allEnumOpt.res)) {
                 this.m_Cache[k] = {
                     nextCheckOn: now,
                     updateOn: now,
                     data: v
-                }
-                await this.m_Redis.hset(
-                    'cache',
-                    `${this.m_TimeField}:${k}`,
-                    now.toString()
-                );
+                };
+                args[`${this.m_TimeField}:${k}`] = now.toString();
             }
+            await this.m_Redis.hmset('cache', args);
         }
 
         if (this.m_Cache[opt.enum.name].nextCheckOn >= now) {

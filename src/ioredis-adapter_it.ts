@@ -229,6 +229,36 @@ describe('src/ioredis-adapter.ts', () => {
         });
     });
 
+    describe('.hmset(k: string, args: { [key: string]: string }): Promise<void>', () => {
+        const key = 'hmset';
+        it('exists', async () => {
+            const args = {
+                a: 'aaa',
+                b: 'bbb'
+            }
+            await client.hmset(key, args);
+            await self.hmset(key, {
+                a: 'aaaa'
+            });
+
+            const res = await client.hget(key, 'a');
+            strictEqual(res, 'aaaa');
+
+            await client.del(key);
+        });
+
+        it('not exist', async () => {
+            await self.hmset(key, {
+                b: 'bb'
+            });
+
+            const res = await client.hget(key, 'b');
+            strictEqual(res, 'bb');
+
+            await client.del(key);
+        });
+    });
+
     describe('.hkeys(key: string): Promise<string[]>', () => {
         const key = 'hkeys';
         it('ok', async () => {

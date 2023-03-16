@@ -121,6 +121,14 @@ export abstract class RedisBase {
     public abstract hlen(key: string): Promise<number>;
 
     /**
+     * 批量设置hash字段的值
+     * 
+     * @param key 键
+     * @param args { 字段 : 值 }
+     */
+    public abstract hmset(key: string, args: { [key: string]: string }): Promise<void>;
+
+    /**
      * 获取hash所有键
      * 
      * @param key 键

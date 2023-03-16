@@ -89,6 +89,10 @@ export class IoredisAdapter extends RedisBase {
         return this.client.hlen(key);
     }
 
+    public async hmset(key: string, args: { [key: string]: string }) {
+        await this.client.hmset(key, args);
+    }
+
     public async hkeys(key: string) {
         return this.client.hkeys(key);
     }

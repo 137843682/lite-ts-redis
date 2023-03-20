@@ -1,4 +1,3 @@
 export interface ICache {
-    flush(): Promise<void>;
-    get<T>(key: string): Promise<T>;
+    flush(name: string, areaNo?: number): Promise<void>;
 }

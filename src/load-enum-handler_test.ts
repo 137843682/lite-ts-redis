@@ -14,8 +14,10 @@ describe('src/load-enum-handler.ts', () => {
                 self,
                 'm_Cache',
                 {
-                    't': {
-                        nextCheckOn: Date.now() * 2
+                    0: {
+                        't': {
+                            nextCheckOn: Date.now() * 2
+                        }
                     }
                 }
             );
@@ -25,7 +27,7 @@ describe('src/load-enum-handler.ts', () => {
                 enum: {
                     name: 't'
                 } as any,
-                res
+                res,
             });
             deepStrictEqual(res, {});
         });
@@ -37,16 +39,18 @@ describe('src/load-enum-handler.ts', () => {
                 self,
                 'm_Cache',
                 {
-                    't': {
-                        nextCheckOn: Date.now() - 100,
-                        updateOn: 0,
-                        data: {}
+                    0: {
+                        't': {
+                            nextCheckOn: Date.now() - 100,
+                            updateOn: 0,
+                            data: {}
+                        }
                     }
                 }
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'f:t'),
+                r => r.hget('cache:0', 'f:t'),
                 '1'
             );
 
@@ -54,6 +58,7 @@ describe('src/load-enum-handler.ts', () => {
             self.setNext(mockHandler.actual);
 
             const opt = {
+                areaNo: 0,
                 enum: {
                     name: 't'
                 } as any,
@@ -73,16 +78,18 @@ describe('src/load-enum-handler.ts', () => {
                 self,
                 'm_Cache',
                 {
-                    't': {
-                        nextCheckOn: Date.now() - 100,
-                        updateOn: 0,
-                        data: {}
+                    0: {
+                        't': {
+                            nextCheckOn: Date.now() - 100,
+                            updateOn: 0,
+                            data: {}
+                        }
                     }
                 }
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'f:t'),
+                r => r.hget('cache:0', 'f:t'),
                 '0'
             );
 
@@ -105,11 +112,13 @@ describe('src/load-enum-handler.ts', () => {
                     self,
                     'm_Cache',
                     {
-                        't': {
-                            nextCheckOn: Date.now() * 2,
-                            data: {
-                                2: {
-                                    value: 2
+                        0: {
+                            't': {
+                                nextCheckOn: Date.now() * 2,
+                                data: {
+                                    2: {
+                                        value: 2
+                                    }
                                 }
                             }
                         }
@@ -140,16 +149,18 @@ describe('src/load-enum-handler.ts', () => {
                 self,
                 'm_Cache',
                 {
-                    't': {
-                        nextCheckOn: Date.now() - 100,
-                        updateOn: 0,
-                        data: {}
+                    0: {
+                        't': {
+                            nextCheckOn: Date.now() - 100,
+                            updateOn: 0,
+                            data: {}
+                        }
                     }
                 }
             );
 
             mockRedis.expectReturn(
-                r => r.hget('cache', 'f:a'),
+                r => r.hget('cache:0', 'f:a'),
                 null
             );
 
@@ -157,6 +168,7 @@ describe('src/load-enum-handler.ts', () => {
             self.setNext(mockHandler.actual);
 
             const opt = {
+                areaNo: 0,
                 enum: {
                     name: 'a'
                 } as any,

@@ -1,4 +1,4 @@
-import { ITraceable } from './i-traceable';
+import { ITraceable } from 'lite-ts-jaeger-client';
 
 export class TracerWrapper<T> implements ITraceable<T> {
     public constructor(

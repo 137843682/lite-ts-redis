@@ -1,6 +1,6 @@
+import { ITraceable } from 'lite-ts-jaeger-client';
 import { ThreadBase } from 'lite-ts-thread';
 
-import { ITraceable } from './i-traceable';
 import { IMutex, IMutexOption } from './i-mutex';
 import { RedisBase } from './redis-base';
 import { TracerWrapper } from './tracer-wrapper';

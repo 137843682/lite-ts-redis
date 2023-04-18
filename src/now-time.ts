@@ -1,10 +1,14 @@
+import { NowTimeBase } from 'lite-ts-moment';
 import moment from 'moment';
 
-import { INowTime } from './i-now-time';
 import { RedisBase } from './redis-base';
 
-export class RedisNowTime implements INowTime {
-    public constructor(private m_Redis: RedisBase) { }
+export class RedisNowTime extends NowTimeBase {
+    public constructor(
+        private m_Redis: RedisBase
+    ) {
+        super();
+    }
 
     public async isSame(unixTime: number, granularity: string) {
         const nowUnix = await this.unix();

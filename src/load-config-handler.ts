@@ -1,21 +1,18 @@
 import { ConfigLoadHandlerBase, ConfigLoadHandlerContext } from 'lite-ts-config';
 
-import { RedisBase } from './redis-base';
+import { ICache } from './i-cache';
 
-export class LoadRedisConfigHandler extends ConfigLoadHandlerBase {
+export class RedisLoadConfigHandler extends ConfigLoadHandlerBase {
     public constructor(
-        private dataKey: string,
-        private redis: RedisBase,
+        private m_Cache: ICache,
     ) {
         super();
     }
 
-    public async handle(opt: ConfigLoadHandlerContext): Promise<void> {
-        opt.areaNo ??= 0;
-        const v = await this.redis.hget(`${this.dataKey}:${opt.areaNo}`, opt.name);
-        if (v)
-            opt.res = JSON.stringify(v);
-        else
-            await this.next?.handle?.(opt);
+    public async handle(ctx: ConfigLoadHandlerContext) {
+        ctx.res = await this.m_Cache.get(ctx.name, ctx.areaNo, async () => {
+            await this.next?.handle?.(ctx);
+            return ctx.res;
+        });
     }
 }

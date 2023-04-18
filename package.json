@@ -7,6 +7,8 @@
     "ioredis": "^4.28.5",
     "lite-ts-config": "^2.1.1",
     "lite-ts-enum": "^1.8.1",
+    "lite-ts-jaeger-client": "^1.6.0",
+    "lite-ts-moment": "^1.0.0",
     "lite-ts-thread": "^1.0.0",
     "moment": "^2.29.4"
   },

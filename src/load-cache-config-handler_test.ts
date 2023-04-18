@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { LoadConfigHandleOption } from 'lite-ts-config';
+import { ConfigLoadHandlerContext } from 'lite-ts-config';
 import { Mock, mockAny } from 'lite-ts-mock';
 
 import { ICache } from './i-cache';
@@ -16,7 +16,7 @@ describe('src/load-cache-config-handler.ts', () => {
                 1
             );
 
-            const opt: LoadConfigHandleOption = {
+            const opt: ConfigLoadHandlerContext = {
                 name: 'name',
                 areaNo: 0,
             };

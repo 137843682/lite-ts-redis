@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { LoadEnumHandleOption } from 'lite-ts-enum';
+import { LoadEnumHandlerContext } from 'lite-ts-enum';
 import { Mock, mockAny } from 'lite-ts-mock';
 
 import { ICache } from './i-cache';
@@ -16,7 +16,7 @@ describe('src/load-cache-enum-handler.ts', () => {
                 1
             );
 
-            const opt: LoadEnumHandleOption = {
+            const opt: LoadEnumHandlerContext = {
                 enum: {
                     name: 't'
                 } as any,

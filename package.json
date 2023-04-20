@@ -7,6 +7,7 @@
     "ioredis": "^4.28.5",
     "lite-ts-config": "^2.1.1",
     "lite-ts-enum": "^1.9.1",
+    "lite-ts-error": "^1.1.0",
     "lite-ts-jaeger-client": "^1.9.0",
     "lite-ts-thread": "^1.2.0",
     "lite-ts-time": "^1.2.0"

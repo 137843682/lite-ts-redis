@@ -1,8 +1,9 @@
 import { notStrictEqual, ok, strictEqual } from 'assert';
+import { CustomError } from 'lite-ts-error';
 import { Mock } from 'lite-ts-mock';
 import { ThreadBase } from 'lite-ts-thread';
 
-import { CustomError, RedisMutex as Self } from './mutex';
+import { RedisMutex as Self } from './mutex';
 import { IoredisAdapter } from './ioredis-adapter';
 
 const cfg = {

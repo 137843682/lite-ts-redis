@@ -1,31 +1,20 @@
-import { ITraceable } from 'lite-ts-jaeger-client';
-import { ThreadBase } from 'lite-ts-thread';
+import { CustomError } from 'lite-ts-error';
+import { ITraceable, TracerStrategy } from 'lite-ts-jaeger-client';
+import { ThreadBase, MutexBase, MutexOption } from 'lite-ts-thread';
 
-import { IMutex, IMutexOption } from './i-mutex';
 import { RedisBase } from './redis-base';
-import { TracerWrapper } from './tracer-wrapper';
 
-export interface IRedisMutexOption extends IMutexOption {
-    timeoutSeconds?: number;
-    tryCount?: number;
-    sleepRange?: [number, number];
-}
-
-export class CustomError extends Error {
-    public constructor(public code: number) {
-        super('');
-    }
-}
-
-export class RedisMutex implements IMutex, ITraceable<IMutex> {
+export class RedisMutex extends MutexBase implements ITraceable<MutexBase> {
     public static waitLockErrorCode = 507;
 
     public constructor(
         private m_Redis: RedisBase,
         private m_Thread: ThreadBase,
-    ) { }
+    ) {
+        super();
+    }
 
-    public async lock(opt: IRedisMutexOption) {
+    public async lock(opt: MutexOption) {
         if (opt.timeoutSeconds) {
             const ok = await this.m_Redis.set(opt.key, 'ok', 'ex', opt.timeoutSeconds, 'nx');
             return ok ? async () => {
@@ -56,7 +45,7 @@ export class RedisMutex implements IMutex, ITraceable<IMutex> {
 
     public withTrace(parentSpan: any) {
         return parentSpan ? new RedisMutex(
-            new TracerWrapper(this.m_Redis).withTrace(parentSpan),
+            new TracerStrategy(this.m_Redis).withTrace(parentSpan),
             this.m_Thread,
         ) : this;
     }

@@ -6,19 +6,18 @@
   "dependencies": {
     "ioredis": "^4.28.5",
     "lite-ts-config": "^2.1.1",
-    "lite-ts-enum": "^1.8.1",
-    "lite-ts-jaeger-client": "^1.6.0",
-    "lite-ts-moment": "^1.0.0",
-    "lite-ts-thread": "^1.0.0",
-    "moment": "^2.29.4"
+    "lite-ts-enum": "^1.9.1",
+    "lite-ts-jaeger-client": "^1.9.0",
+    "lite-ts-thread": "^1.2.0",
+    "lite-ts-time": "^1.2.0"
   },
   "description": "redis client",
   "devDependencies": {
     "@types/ioredis": "^4.26.4",
-    "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "lite-ts-mock": "^1.1.0",
+    "moment": "^2.29.4",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   },

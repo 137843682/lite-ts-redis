@@ -1,4 +1,5 @@
 import { ok, strictEqual } from 'assert';
+import { DateTime, TimeGranularity } from 'lite-ts-time';
 import moment from 'moment';
 
 import { IoredisAdapter } from './ioredis-adapter';
@@ -9,42 +10,28 @@ const cfg = {
     port: 6379,
 };
 const redis = new IoredisAdapter(cfg);
+const time = new DateTime();
 
 describe('src/now-time.ts', () => {
     describe('.isSame(unixTime: number, granularity: string)', () => {
         it('same day', async () => {
             const endDayUnix = moment().endOf('day').unix();
-            const res = await new Self(redis).isSame(endDayUnix, 'day');
+            const res = await new Self(redis, time).isSameUnix(endDayUnix, TimeGranularity.day);
             strictEqual(res, true);
         });
 
         it('diff day', async () => {
             const endDayUnix = moment().endOf('day').unix();
-            const res = await new Self(redis).isSame(endDayUnix + 1, 'day');
+            const res = await new Self(redis, time).isSameUnix(endDayUnix + 1, TimeGranularity.day);
             strictEqual(res, false);
         });
     });
 
     describe('.unix()', () => {
         it('ok', async () => {
-            const self = new Self(redis);
+            const self = new Self(redis, time);
             const unix = await self.unix();
             ok(Math.floor(Date.now() / 1000) - unix < 5);
-        });
-    });
-
-    describe('.unixNano()', () => {
-        it('ok', async () => {
-            const self = new Self(redis);
-            const nanoUnix = await self.unixNano();
-            const unix = parseInt(
-                nanoUnix.toString().substring(0, 13),
-            );
-            ok(Date.now() - unix < 5);
-            strictEqual(
-                nanoUnix.toString().length,
-                19
-            );
         });
     });
 });

@@ -2,9 +2,9 @@ import { ConfigLoadHandlerBase, ConfigLoadHandlerContext } from 'lite-ts-config'
 
 import { ICache } from './i-cache';
 
-export class RedisLoadConfigHandler extends ConfigLoadHandlerBase {
+export class RedisConfigLoadHandler extends ConfigLoadHandlerBase {
     public constructor(
-        private m_Cache: ICache,
+        private m_Cache: ICache
     ) {
         super();
     }

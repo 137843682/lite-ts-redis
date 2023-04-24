@@ -2,11 +2,11 @@ import { strictEqual } from 'assert';
 import { EnumLoadHandlerContext } from 'lite-ts-enum';
 import { Mock, mockAny } from 'lite-ts-mock';
 
+import { RedisEnumLoadHandler as Self } from './enum-load-handler';
 import { ICache } from './i-cache';
-import { RedisLoadEnumHandler as Self } from './load-enum-handler';
 
-describe('src/load-cache-enum-handler.ts', () => {
-    describe('.handle(opt: LoadEnumHandlerBase)', () => {
+describe('src/enum-load-handler.ts', () => {
+    describe('.handle(opt: EnumLoadHandlerContext)', () => {
         it('ok', async () => {
             const cacheMock = new Mock<ICache>();
             const self = new Self(cacheMock.actual);

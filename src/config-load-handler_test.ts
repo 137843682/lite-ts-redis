@@ -2,10 +2,10 @@ import { strictEqual } from 'assert';
 import { ConfigLoadHandlerContext } from 'lite-ts-config';
 import { Mock, mockAny } from 'lite-ts-mock';
 
+import { RedisConfigLoadHandler as Self } from './config-load-handler';
 import { ICache } from './i-cache';
-import { RedisLoadConfigHandler as Self } from './load-config-handler';
 
-describe('src/load-config-handler.ts', () => {
+describe('src/config-load-handler.ts', () => {
     describe('.handle(ctx: ConfigLoadHandlerContext)', () => {
         it('ok', async () => {
             const cacheMock = new Mock<ICache>();

@@ -2,7 +2,7 @@ import { EnumLoadHandlerContext, EnumLoadHandlerBase } from 'lite-ts-enum';
 
 import { ICache } from './i-cache';
 
-export class RedisLoadEnumHandler extends EnumLoadHandlerBase {
+export class RedisEnumLoadHandler extends EnumLoadHandlerBase {
     public constructor(
         private m_Cache: ICache,
     ) {

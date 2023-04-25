@@ -1,5 +1,5 @@
 import { CustomError } from 'lite-ts-error';
-import { ITraceable, TracerStrategy } from 'lite-ts-jaeger-client';
+import { ITraceable, TracerStrategy } from 'lite-ts-tracer';
 import { ThreadBase, MutexBase, MutexOption } from 'lite-ts-thread';
 
 import { RedisBase } from './redis-base';

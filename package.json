@@ -6,16 +6,15 @@
   "dependencies": {
     "ioredis": "^4.28.5",
     "lite-ts-config": "^2.1.1",
-    "lite-ts-enum": "^3.10.1",
+    "lite-ts-enum": "^3.11.1",
     "lite-ts-error": "^1.1.0",
-    "lite-ts-jaeger-client": "^3.9.0",
     "lite-ts-thread": "^1.2.0",
-    "lite-ts-time": "^1.2.0"
+    "lite-ts-time": "^1.2.0",
+    "lite-ts-tracer": "^3.0.0"
   },
   "description": "redis client",
   "devDependencies": {
     "@types/ioredis": "^4.26.4",
-    "@types/jaeger-client": "^3.18.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "lite-ts-mock": "^1.1.0",

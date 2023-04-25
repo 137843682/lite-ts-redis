@@ -16,15 +16,15 @@ describe('src/enum-load-handler.ts', () => {
                 1
             );
 
-            const opt: EnumLoadHandlerContext = {
+            const ctx: EnumLoadHandlerContext = {
+                app: 'app',
                 enum: {
                     name: 't'
                 } as any,
                 areaNo: 0,
-                res: null
             };
-            await self.handle(opt);
-            strictEqual(opt.res, 1);
+            await self.handle(ctx);
+            strictEqual(ctx.res, 1);
         });
     });
 });

@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { Mock } from 'lite-ts-mock';
+import { Mock, mockAny } from 'lite-ts-mock';
 
 import { RedisCache as Self } from './cache';
 import { RedisBase } from './redis-base';
@@ -13,10 +13,17 @@ describe('src/cache.ts', () => {
                     hsetCount++;
                 }
             });
-            const self = new Self('enum', redisMock.actual, { a: ['aa'] });
+            const self = new Self('default-app', 'enum', redisMock.actual, { a: ['aa'] });
             await self.flush('aa');
 
             strictEqual(hsetCount, 1);
+        });
+
+        it('使用默认app', async () => {
+            const redisMock = new Mock<RedisBase>();
+            const self = new Self('default-app', 'enum', redisMock.actual, {});
+            redisMock.expected.hset('cache:0', 'default-app:enum:aa', mockAny);
+            await self.flush('aa');
         });
     });
 
@@ -27,7 +34,7 @@ describe('src/cache.ts', () => {
                 r => r.hget('cache:0', 'a:enum:aa'),
                 null
             );
-            const self = new Self('enum', redisMock.actual, { a: ['aa'] });
+            const self = new Self('default-app', 'enum', redisMock.actual, { a: ['aa'] });
 
             const data = await self.get('aa', 0, async () => 1);
             strictEqual(data, 1);
@@ -39,7 +46,7 @@ describe('src/cache.ts', () => {
                 r => r.hget('cache:0', 'a:enum:aa'),
                 null
             );
-            const self = new Self('enum', redisMock.actual, { a: ['aa'] });
+            const self = new Self('default-app', 'enum', redisMock.actual, { a: ['aa'] });
 
             Reflect.set(self, 'm_Cache', {
                 0: {
@@ -60,7 +67,7 @@ describe('src/cache.ts', () => {
                 r => r.hget('cache:0', 'a:enum:aa'),
                 Date.now() + 10
             );
-            const self = new Self('enum', redisMock.actual, { a: ['aa'] });
+            const self = new Self('default-app', 'enum', redisMock.actual, { a: ['aa'] });
 
             Reflect.set(self, 'm_Cache', {
                 0: {

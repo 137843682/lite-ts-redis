@@ -1,4 +1,5 @@
 export * from './cache';
+export * from './cache-base';
 export * from './config-load-handler';
 export * from './enum-load-handler';
 export * from './i-cache';
